@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        /* 챗봇 UI 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        #chatbox {
+            width: 400px;
+            height: 500px;
+            border: 2px solid #333;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+        }
+        .user, .bot {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        .user {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+        }
+        .bot {
+            background-color: #e2e3e5;
+            align-self: flex-start;
+        }
+        #inputArea {
+            display: flex;
+            margin-top: 10px;
+        }
+        #inputText {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+        }
+        #sendButton {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>Chatbot</h2>
+        <div id="chatbox"></div>
+        <div id="inputArea">
+            <input type="text" id="inputText" placeholder="Type your message...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatbox = document.getElementById("chatbox");
+        const inputText = document.getElementById("inputText");
+        const sendButton = document.getElementById("sendButton");
+
+        // 메시지를 챗 UI에 추가하는 함수
+        function addMessage(content, sender) {
+            const message = document.createElement("div");
+            message.classList.add(sender);
+            message.textContent = content;
+            chatbox.appendChild(message);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        // 질문을 Flask 서버에 전송하는 함수
+        sendButton.addEventListener("click", () => {
+            const userInput = inputText.value;
+            if (userInput) {
+                addMessage(userInput, "user");
+                inputText.value = "";
+
+                // Flask API에 POST 요청
+                fetch('http://127.0.0.1:5000/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: userInput })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // data.answer가 객체일 경우 JSON.stringify로 변환
+                    const answer = typeof data.answer === "object" ? JSON.stringify(data.answer) : data.answer;
+                    addMessage(answer, "bot");
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+
+        // Enter 키로 질문 전송
+        inputText.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                sendButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
