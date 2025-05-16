@@ -12,12 +12,12 @@ import os
 
 
 # Azure OpenAI 설정
-openai_api_key = "4c591ec7bff34591863e42e99f656436"
+openai_api_key = "***"
 openai_api_base = "https://yoonj-m2sdiwe0-eastus.cognitiveservices.azure.com/openai/deployments/text-embed/embeddings?api-version=2023-05-15"
 llm = AzureChatOpenAI(
     temperature=0,
     model_name="gpt-35-turbo",
-    azure_endpoint="https://yoonj-m2sdiwe0-eastus.cognitiveservices.azure.com/",
+    azure_endpoint="***",
     openai_api_key=openai_api_key,
     openai_api_type="azure",
     openai_api_version="2024-02-01",
